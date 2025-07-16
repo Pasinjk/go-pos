@@ -5,5 +5,7 @@ import (
 )
 
 type UserRepository interface {
-	Save(user model.User) error
+	Save(user model.User) (model.User, error)
+	GetAllUsers() ([]model.User, error)
+	GetUserByID(id uint) (model.User, error)
 }

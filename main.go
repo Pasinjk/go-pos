@@ -53,6 +53,8 @@ func main() {
 	userHandler := http.NewHttpUserHandler(userService)
 
 	app.Post("/register", userHandler.CreateUser)
+	app.Get("/users", userHandler.GetAllUsers)
+	app.Get("/users/:id", userHandler.GetUserByID)
 
 	app.Listen(":8080")
 }

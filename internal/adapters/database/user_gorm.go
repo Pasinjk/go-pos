@@ -14,10 +14,33 @@ func NewGormUserRepository(db *gorm.DB) domain.UserRepository {
 	return &GormUserRepository{db: db}
 }
 
-func (r *GormUserRepository) Save(user model.User) error {
+func (r *GormUserRepository) Save(user model.User) (model.User, error) {
 	if result := r.db.Create(&user); result.Error != nil {
 		// Handle database errors
-		return result.Error
+		return model.User{}, result.Error
 	}
-	return nil
+
+	var SavedUser model.User
+	if err := r.db.First(&SavedUser, user.ID).Error; err != nil {
+		// Handle database errors
+		return model.User{}, err
+	}
+
+	return SavedUser, nil
+}
+
+func (r *GormUserRepository) GetAllUsers() ([]model.User, error) {
+	var users []model.User
+	if err := r.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *GormUserRepository) GetUserByID(id uint) (model.User, error) {
+	var user model.User
+	if err := r.db.First(&user, id).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
 }
