@@ -1,0 +1,17 @@
+
+├── internal/
+│   ├── domain/              # Core business models and interfaces
+│   │   ├── model/           # Domain models (e.g., User, Product)
+│   │   └── ports.go         # Interfaces (ports) for adapters
+│   ├── usecase/             # Business logic (application layer)
+│   │   └── user_usecase.go
+│   ├── adapter/             # External frameworks and drivers
+│   │   ├── http/            # HTTP handlers (e.g., Fiber)
+│   │   │   └── user_handler.go
+│   │   └── db/              # DB implementations (e.g., GORM)
+│   │       └── user_gorm.go
+│   └── config/              # Configuration (env, database)
+│       └── config.go
+├── migrations/              # SQL migration files
+├── go.mod
+└── go.sum
