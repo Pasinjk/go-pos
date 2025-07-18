@@ -12,6 +12,8 @@ type UserService interface {
 	CreateUser(user model.User) (model.User, error)
 	GetAllUsers() ([]model.User, error)
 	GetUserByID(id uint) (model.User, error)
+	UpdateUser(user model.User) (model.User, error)
+	DeleteUser(id uint) error // Optional, if you want to implement user deletion
 }
 
 type userServiceImpl struct {
@@ -25,7 +27,7 @@ func NewUserService(repo domain.UserRepository) UserService {
 func (s *userServiceImpl) CreateUser(user model.User) (model.User, error) {
 	// Check required
 	if user.Email == "" || user.Password == "" || user.Name == "" || user.Role == "" {
-		return model.User{}, errors.New("Please check request data again")
+		return model.User{}, errors.New("please check request data again")
 	}
 
 	// create hash password
@@ -59,4 +61,61 @@ func (s *userServiceImpl) GetUserByID(id uint) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
+}
+
+func (s *userServiceImpl) UpdateUser(user model.User) (model.User, error) {
+	if user.ID == 0 {
+		return model.User{}, errors.New("user ID is required for update")
+	}
+
+	// Check if user exists
+	existingUser, err := s.repo.GetUserByID(user.ID)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	// Update fields
+	if user.Name != "" {
+		existingUser.Name = user.Name
+	}
+	if user.Email != "" {
+		existingUser.Email = user.Email
+	}
+	if user.Role != "" {
+		existingUser.Role = user.Role
+	}
+	if user.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return model.User{}, errors.New("error to hashed password")
+		}
+		existingUser.Password = string(hashedPassword)
+	}
+
+	// Save updated user
+	updatedUser, err := s.repo.UpdateUser(existingUser)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return updatedUser, nil
+}
+
+func (s *userServiceImpl) DeleteUser(id uint) error {
+	if id == 0 {
+		return errors.New("user ID is required for deletion")
+	}
+
+	// Check if user exists
+	_, err := s.repo.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+
+	// Delete user
+	if err := s.repo.DeleteUser(id); err != nil {
+		return err
+	}
+
+	return nil
 }

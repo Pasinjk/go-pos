@@ -60,3 +60,49 @@ func (h *HttpUserHandler) GetUserByID(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(response.GetUserByIDResponse(user))
 }
+
+func (h *HttpUserHandler) UpdateUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "user ID is required"})
+	}
+	userID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	var user model.User
+	if err := c.BodyParser(&user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	}
+	user.ID = uint(userID)
+
+	updatedUser, err := h.service.UpdateUser(user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"username": updatedUser.Name,
+		"email":    updatedUser.Email,
+		"role":     updatedUser.Role,
+	})
+}
+
+func (h *HttpUserHandler) DeleteUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "user ID is required"})
+	}
+	userID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	err = h.service.DeleteUser(uint(userID))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
+}

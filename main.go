@@ -55,6 +55,16 @@ func main() {
 	app.Post("/register", userHandler.CreateUser)
 	app.Get("/users", userHandler.GetAllUsers)
 	app.Get("/users/:id", userHandler.GetUserByID)
+	app.Put("/users/:id", userHandler.UpdateUser)
+	app.Delete("/users/:id", userHandler.DeleteUser)
+
+	categoriesRepo := database.NewGormCategoriesRepository(db)
+	categoriesService := usecase.NewCategoriesService(categoriesRepo)
+	categoriesHandler := http.NewHttpCategoriesHandler(categoriesService)
+
+	app.Post("/categories", categoriesHandler.CreateCategory)
+	app.Get("/categories", categoriesHandler.GetAllCategories)
+	app.Put("/categories/:id", categoriesHandler.UpdateCategory)
 
 	app.Listen(":8080")
 }

@@ -44,3 +44,23 @@ func (r *GormUserRepository) GetUserByID(id uint) (model.User, error) {
 	}
 	return user, nil
 }
+
+func (r *GormUserRepository) UpdateUser(user model.User) (model.User, error) {
+	if result := r.db.Save(&user); result.Error != nil {
+		return model.User{}, result.Error
+	}
+
+	var updatedUser model.User
+	if err := r.db.First(&updatedUser, user.ID).Error; err != nil {
+		return model.User{}, err
+	}
+
+	return updatedUser, nil
+}
+
+func (r *GormUserRepository) DeleteUser(id uint) error {
+	if result := r.db.Delete(&model.User{}, id); result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
