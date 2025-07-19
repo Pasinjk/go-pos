@@ -48,3 +48,11 @@ func (r *GormCategoriesRepository) UpdateCategory(category model.Category) (mode
 
 	return updatedCategory, nil
 }
+
+func (r *GormCategoriesRepository) GetCategoryByID(id uint) (model.Category, error) {
+	var category model.Category
+	if err := r.db.First(&category, id).Error; err != nil {
+		return model.Category{}, err
+	}
+	return category, nil
+}

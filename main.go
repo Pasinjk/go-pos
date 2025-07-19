@@ -43,9 +43,10 @@ func main() {
 		&model.Product{},
 		&model.Category{},
 		&model.Customer{},
-		&model.Sales{},
-		&model.SalesItem{},
-		&model.InventoryLog{},
+		&model.Payment{},
+		&model.Transaction{},
+		&model.TransactionItem{},
+		&model.StockMovement{},
 	)
 
 	userRepo := database.NewGormUserRepository(db)
@@ -64,6 +65,7 @@ func main() {
 
 	app.Post("/categories", categoriesHandler.CreateCategory)
 	app.Get("/categories", categoriesHandler.GetAllCategories)
+	app.Get("/categories/:id", categoriesHandler.GetCategoryByID)
 	app.Put("/categories/:id", categoriesHandler.UpdateCategory)
 
 	app.Listen(":8080")

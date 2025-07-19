@@ -11,6 +11,7 @@ type CategoriesService interface {
 	CreateCategory(category model.Category) (model.Category, error)
 	GetAllCategories() ([]model.Category, error)
 	UpdateCategory(category model.Category) (model.Category, error)
+	GetCategoryByID(id uint) (model.Category, error)
 }
 
 type categoriesServiceImpl struct {
@@ -57,4 +58,23 @@ func (s *categoriesServiceImpl) UpdateCategory(category model.Category) (model.C
 	}
 
 	return updatedCategory, nil
+}
+
+func (s *categoriesServiceImpl) GetCategoryByID(id uint) (model.Category, error) {
+	if id == 0 {
+		return model.Category{}, errors.New("category ID is required")
+	}
+
+	categories, err := s.repo.GetAllCategories()
+	if err != nil {
+		return model.Category{}, err
+	}
+
+	for _, category := range categories {
+		if category.ID == id {
+			return category, nil
+		}
+	}
+
+	return model.Category{}, errors.New("category not found")
 }

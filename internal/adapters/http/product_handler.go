@@ -14,3 +14,16 @@ type HttpProductHandler struct {
 func NewHttpProductHandler(service usecase.ProductService) *HttpProductHandler {
 	return &HttpProductHandler{service: service}
 }
+
+// func (h *HttpProductHandler) CreateProduct(c *fiber.Ctx) error {
+// 	var product model.Product
+// 	if err := c.BodyParser(&product); err != nil {
+// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+// 	}
+// 	savedProduct, err := h.service.CreateProduct(product)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+// 	}
+// 	return c.Status(fiber.StatusCreated).JSON()
+
+// }

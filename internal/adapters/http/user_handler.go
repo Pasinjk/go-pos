@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pasinjk/go-pos/internal/domain/model"
-	"github.com/pasinjk/go-pos/internal/domain/model/response"
 	"github.com/pasinjk/go-pos/internal/usecase"
 )
 
@@ -26,7 +25,7 @@ func (h *HttpUserHandler) CreateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(response.NewUserResponse(savedUser))
+	return c.Status(fiber.StatusCreated).JSON(model.UserResponse(savedUser))
 }
 
 func (h *HttpUserHandler) GetAllUsers(c *fiber.Ctx) error {
@@ -34,14 +33,16 @@ func (h *HttpUserHandler) GetAllUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-
-	var userResponses []response.UserResponse
-	for _, user := range users {
-		userResponses = append(userResponses, response.NewUserResponse(user))
+	if len(users) == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "no users found"})
 	}
 
+	var responses []model.UserDataResponse
+	for _, u := range users {
+		responses = append(responses, model.UserResponse(u))
+	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"users": userResponses})
+		"users": responses, "total": len(responses)})
 }
 
 func (h *HttpUserHandler) GetUserByID(c *fiber.Ctx) error {
@@ -58,7 +59,14 @@ func (h *HttpUserHandler) GetUserByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(response.GetUserByIDResponse(user))
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"id":         user.ID,
+		"name":       user.Name,
+		"email":      user.Email,
+		"role":       user.Role,
+		"created_at": user.CreatedAt.Format("2006-01-02 15:04:05"),
+		"updated_at": user.UpdatedAt.Format("2006-01-02 15:04:05"),
+	})
 }
 
 func (h *HttpUserHandler) UpdateUser(c *fiber.Ctx) error {

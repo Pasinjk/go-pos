@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pasinjk/go-pos/internal/domain/model"
-	"github.com/pasinjk/go-pos/internal/domain/model/response"
 	"github.com/pasinjk/go-pos/internal/usecase"
 )
 
@@ -32,16 +31,15 @@ func (h *HttpCategoriesHandler) CreateCategory(c *fiber.Ctx) error {
 	})
 }
 
-// TODO Count the product in each category and return each category with its product count
 func (h *HttpCategoriesHandler) GetAllCategories(c *fiber.Ctx) error {
-	categories, err := h.service.GetAllCategories()
+	category, err := h.service.GetAllCategories()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	var categoryResponses []response.CategoriesResponse
-	for _, category := range categories {
-		categoryResponses = append(categoryResponses, response.NewCategoriesResponse(category))
+	var categoryResponses []model.AllCategoryDataResponse
+	for _, categories := range category {
+		categoryResponses = append(categoryResponses, model.GetAllCategoryResponse(categories))
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -70,4 +68,20 @@ func (h *HttpCategoriesHandler) UpdateCategory(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"name":        updatedCategory.Name,
 		"description": updatedCategory.Description})
+}
+
+func (h *HttpCategoriesHandler) GetCategoryByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "category ID is required"})
+	}
+	categoryID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	category, err := h.service.GetCategoryByID(uint(categoryID))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(model.CategoryResponse(category))
 }
