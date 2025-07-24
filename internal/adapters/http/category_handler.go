@@ -85,3 +85,21 @@ func (h *HttpCategoriesHandler) GetCategoryByID(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(model.CategoryResponse(category))
 }
+
+func (h *HttpCategoriesHandler) DeleteCatagoryByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "category ID is required"})
+	}
+
+	categoryID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	err = h.service.DeleteCatagoryByID(uint(categoryID))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.Status(fiber.StatusNoContent).Send(nil)
+}

@@ -9,4 +9,5 @@ type CategoriesRepository interface {
 	GetAllCategories() ([]model.Category, error)
 	UpdateCategory(category model.Category) (model.Category, error)
 	GetCategoryByID(id uint) (model.Category, error)
+	DeleteCatagoryByID(id uint) error
 }

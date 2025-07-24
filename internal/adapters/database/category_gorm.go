@@ -56,3 +56,10 @@ func (r *GormCategoriesRepository) GetCategoryByID(id uint) (model.Category, err
 	}
 	return category, nil
 }
+
+func (r *GormCategoriesRepository) DeleteCatagoryByID(id uint) error {
+	if result := r.db.Delete(&model.Category{}, id); result != nil {
+		return result.Error
+	}
+	return nil
+}

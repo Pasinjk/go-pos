@@ -16,10 +16,3 @@ type Customer struct {
 	LastPurchase   *time.Time    `json:"last_purchase"`
 	Transactions   []Transaction `json:"recent_transactions,omitempty" gorm:"foreignKey:CustomerID;limit:5"`
 }
-
-type CustomerRequest struct {
-	Name    string `json:"name" validate:"required,min=2,max=100"`
-	Email   string `json:"email" validate:"omitempty,email"`
-	Phone   string `json:"phone"`
-	Address string `json:"address"`
-}

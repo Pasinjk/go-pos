@@ -12,6 +12,7 @@ type CategoriesService interface {
 	GetAllCategories() ([]model.Category, error)
 	UpdateCategory(category model.Category) (model.Category, error)
 	GetCategoryByID(id uint) (model.Category, error)
+	DeleteCatagoryByID(id uint) error
 }
 
 type categoriesServiceImpl struct {
@@ -23,12 +24,10 @@ func NewCategoriesService(repo domain.CategoriesRepository) CategoriesService {
 }
 
 func (s *categoriesServiceImpl) CreateCategory(category model.Category) (model.Category, error) {
-	// Check required fields
 	if category.Name == "" {
 		return model.Category{}, errors.New("category name is required")
 	}
 
-	// Save the category using the repository
 	savedCategory, err := s.repo.Save(category)
 	if err != nil {
 		return model.Category{}, err
@@ -77,4 +76,15 @@ func (s *categoriesServiceImpl) GetCategoryByID(id uint) (model.Category, error)
 	}
 
 	return model.Category{}, errors.New("category not found")
+}
+
+func (s *categoriesServiceImpl) DeleteCatagoryByID(id uint) error {
+	if id == 0 {
+		return errors.New("category ID is required")
+	}
+	err := s.repo.DeleteCatagoryByID(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
