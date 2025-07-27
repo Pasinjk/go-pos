@@ -64,18 +64,18 @@ func (s *categoriesServiceImpl) GetCategoryByID(id uint) (model.Category, error)
 		return model.Category{}, errors.New("category ID is required")
 	}
 
-	categories, err := s.repo.GetAllCategories()
+	categories, err := s.repo.GetCategoryByID(id)
 	if err != nil {
 		return model.Category{}, err
 	}
 
-	for _, category := range categories {
-		if category.ID == id {
-			return category, nil
-		}
-	}
+	// for _, category := range categories {
+	// 	if category.ID == id {
+	// 		return category, nil
+	// 	}
+	// }
 
-	return model.Category{}, errors.New("category not found")
+	return categories, nil
 }
 
 func (s *categoriesServiceImpl) DeleteCatagoryByID(id uint) error {

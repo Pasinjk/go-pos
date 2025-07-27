@@ -23,13 +23,13 @@ type Transaction struct {
 
 type TransactionItem struct {
 	gorm.Model
-	TransactionID uint    `json:"transaction_id"`
-	ProductID     uint    `json:"product_id" validate:"required"`
-	Product       Product `json:"product,omitempty" gorm:"foreignKey:ProductID"`
-	ProductName   string  `json:"product_name" gorm:"-"`
-	Quantity      int     `json:"quantity" validate:"required,min=1"`
-	UnitPrice     float64 `json:"unit_price" gorm:"type:decimal(10,2)" validate:"required,min=0"`
-	Subtotal      float64 `json:"subtotal" gorm:"type:decimal(10,2)"`
+	TransactionID uint        `json:"transaction_id"`
+	Transaction   Transaction `json:"transaction,omitempty" gorm:"foreignKey:TransactionID"`
+	ProductID     uint        `json:"product_id" validate:"required"`
+	Product       Product     `json:"product,omitempty" gorm:"foreignKey:ProductID"`
+	Quantity      int         `json:"quantity" validate:"required,min=1"`
+	UnitPrice     float64     `json:"unit_price" gorm:"type:decimal(10,2)" validate:"required,min=0"`
+	Subtotal      float64     `json:"subtotal" gorm:"type:decimal(10,2)"`
 }
 
 type TransactionRequest struct {

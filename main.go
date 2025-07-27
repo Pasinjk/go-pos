@@ -74,6 +74,8 @@ func main() {
 	customerHandler := http.NewHttpCustomerHandler(customerService)
 
 	app.Post("/customer", customerHandler.CreateCustomer)
+	app.Get("/customer", customerHandler.GetAllCustomer)
+	app.Get("/customer/:id", customerHandler.GetCustomerByID)
 
 	app.Listen(":8080")
 }

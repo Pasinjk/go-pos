@@ -26,3 +26,19 @@ func (r *GormCustomerRepository) Save(customer model.Customer) (model.Customer, 
 
 	return savedCustomer, nil
 }
+
+func (r *GormCustomerRepository) GetAllCustomer() ([]model.Customer, error) {
+	var customers []model.Customer
+	if err := r.db.Find(&customers).Error; err != nil {
+		return nil, err
+	}
+	return customers, nil
+}
+
+func (r *GormCustomerRepository) GetCustomerByID(id uint) (model.Customer, error) {
+	var customer model.Customer
+	if err := r.db.First(&customer, id).Error; err != nil {
+		return model.Customer{}, err
+	}
+	return customer, nil
+}

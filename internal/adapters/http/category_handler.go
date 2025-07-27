@@ -44,6 +44,7 @@ func (h *HttpCategoriesHandler) GetAllCategories(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"categories": categoryResponses,
+		"total":      len(categoryResponses),
 	})
 }
 
@@ -83,7 +84,10 @@ func (h *HttpCategoriesHandler) GetCategoryByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(model.CategoryResponse(category))
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"name":        category.Name,
+		"description": category.Description,
+	})
 }
 
 func (h *HttpCategoriesHandler) DeleteCatagoryByID(c *fiber.Ctx) error {
